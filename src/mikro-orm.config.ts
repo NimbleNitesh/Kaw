@@ -1,5 +1,4 @@
-import { Post } from "./entities/Post";
-import { __prod__ } from "./contant";
+import { __prod__ } from "./constant";
 import { MikroORM, defineConfig } from "@mikro-orm/core";
 import { PostgreSqlDriver } from "@mikro-orm/postgresql";
 import { Migrator } from "@mikro-orm/migrations";
@@ -14,7 +13,8 @@ export default defineConfig({
     driver: PostgreSqlDriver,
     user: 'horridbear',
     password: 'password',
-    entities: [Post],
+    entities: ['dist/entities/**/*.js'],
+    entitiesTs: ['src/entities/**/*.ts'],
     debug: !__prod__,
     extensions: [Migrator],
     host: 'localhost',

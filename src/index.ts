@@ -1,5 +1,5 @@
 import { MikroORM } from "@mikro-orm/core";
-import { __prod__ } from "./contant";
+import { __prod__ } from "./constant";
 import { Post } from "./entities/Post";
 import mikroOrmConfig from "./mikro-orm.config";
 
@@ -7,11 +7,12 @@ const main = async () => {
     // console.log(mikroOrmConfig);
     const orm = await MikroORM.init(mikroOrmConfig);
     await orm.getMigrator().up();
-    const post = orm.em.create(Post, {title: 'First Post test'} as Post);
-    orm.em.persist(post);
-    await orm.em.flush();
-    console.log('-------------sql 2----------------');
-    await orm.em.insert(Post, {title: "Second Post test"} as Post);
+    const em = orm.em.fork()
+    // const post = em.create(Post, {title: 'First Post test'} as Post);
+    // await em.persist(post).flush();
+
+    const post = await em.find(Post, {});
+    console.log(post);
 
 };
 console.log('Nitesh Srivastava')
