@@ -9,35 +9,79 @@ import { HelloResolver } from "./resolvers/hello";
 import { PostResolver } from "./resolvers/post";
 import "reflect-metadata";
 import { UserResolver } from "./resolvers/user";
+import RedisStore from "connect-redis";
+import session from "express-session";
+import { createClient } from "redis";
+import { MyContext } from "./types";
+
+declare module "express-session" {
+    interface SessionData {
+        userId: number;
+    }
+  }
 
 const main = async () => {
-    const orm = await MikroORM.init(mikroOrmConfig);
-    await orm.getMigrator().up();
-    const em = orm.em.fork()
-    const app = express();
+  const orm = await MikroORM.init(mikroOrmConfig);
+  await orm.getMigrator().up();
+  const em = orm.em.fork();
+  const app = express();
 
-    const apolloServer = new ApolloServer({
-        schema: await buildSchema({
-            resolvers: [HelloResolver, PostResolver, UserResolver],
-            validate: false
-        }),
-        context: () => ({em: em})
-    });
+  // Initialize client.
+  let redisClient = createClient();
+  redisClient.connect().catch(console.error);
 
-    await apolloServer.start();    
-    apolloServer.applyMiddleware({ app });
+  // Initialize store.
+  let redisStore = new RedisStore({
+    client: redisClient,
+    prefix: "myapp:",
+    disableTouch: true
+  });
 
-    app.listen(4000, () => {
-        console.log("Server started at port 4000");
-    });
-    // const post = em.create(Post, {title: 'First Post test'} as Post);
-    // await em.persist(post).flush();
+  // Initialize session storage.
+  app.use(
+    session({
+      name: "qid",
+      store: redisStore,
+      resave: false, // required: force lightweight session keep alive (touch)
+      saveUninitialized: false, // recommended: only save session when data exists
+      secret: "fhewufbhwoehuifcnciuhdfoq",
+      cookie: {
+        maxAge: 1000 * 60 * 60 * 24 * 365 * 10, // 10 years
+        httpOnly: true,
+        sameSite: "lax",
+        secure: __prod__
+      }
+    })
+  );
 
-    // const post = await em.find(Post, {});
-    // console.log(post);
+  const apolloServer = new ApolloServer({
+    schema: await buildSchema({
+      resolvers: [HelloResolver, PostResolver, UserResolver],
+      validate: false,
+    }),
+    context: ({req, res}): MyContext => ({ em: em, req, res }),
+  });
 
+  await apolloServer.start();
+  apolloServer.applyMiddleware({ 
+    app,
+    cors: {
+        origin: ['https://studio.apollographql.com'],
+        credentials: true
+    }
+
+});
+
+  app.listen(4000, () => {
+    console.log("Server started at port 4000");
+  });
+  // const post = em.create(Post, {title: 'First Post test'} as Post);
+  // await em.persist(post).flush();
+
+  // const post = await em.find(Post, {});
+  // console.log(post);
 };
-console.log('Nitesh Srivastava')
+console.log("Nitesh Srivastava");
 main().catch((err) => {
-    console.log(err);
+  console.log(err);
 });
