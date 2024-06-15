@@ -7,6 +7,7 @@ import {
   InputType,
   Mutation,
   ObjectType,
+  Query,
   Resolver,
 } from "type-graphql";
 import argon2 from "argon2";
@@ -85,11 +86,7 @@ export class UserResolver {
         ],
       };
     }
-    console.log(
-      user.password,
-      userCredentials.password,
-      userCredentials.username
-    );
+    
     const valid = await argon2.verify(user.password, userCredentials.password);
     if (!valid) {
       return {
@@ -111,4 +108,14 @@ export class UserResolver {
       user: user,
     };
   }
+
+  @Query( () => User, { nullable: true })
+  async me( @Ctx() {em, req}: MyContext ){
+    // console.log(req.session.userId);
+    if(!req.session.userId)
+      return null;
+    const user = await em.findOne(User, {id: req.session.userId});
+    return user;
+  }
+
 }

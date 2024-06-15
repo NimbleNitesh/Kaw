@@ -13,6 +13,7 @@ import RedisStore from "connect-redis";
 import session from "express-session";
 import { createClient } from "redis";
 import { MyContext } from "./types";
+import cors from "cors";
 
 declare module "express-session" {
     interface SessionData {
@@ -54,6 +55,13 @@ const main = async () => {
     })
   );
 
+  app.use(
+    cors({
+      origin: ['https://studio.apollographql.com', 'http://localhost:3000'], // Allow your client URL
+      credentials: true, // Allow credentials
+    })
+  )
+
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
       resolvers: [HelloResolver, PostResolver, UserResolver],
@@ -63,13 +71,10 @@ const main = async () => {
   });
 
   await apolloServer.start();
+
   apolloServer.applyMiddleware({ 
     app,
-    cors: {
-        origin: ['https://studio.apollographql.com'],
-        credentials: true
-    }
-
+    cors: false
 });
 
   app.listen(4000, () => {
