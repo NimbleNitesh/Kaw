@@ -12,7 +12,6 @@ import { UserResolver } from "./resolvers/user";
 import RedisStore from "connect-redis";
 import session from "express-session";
 import { createClient } from "redis";
-import { MyContext } from "./types";
 import cors from "cors";
 
 declare module "express-session" {
@@ -38,6 +37,13 @@ const main = async () => {
     disableTouch: true
   });
 
+  app.use(
+    cors({
+      origin: ['https://studio.apollographql.com', 'http://localhost:3000'], // Allow your client URL
+      credentials: true, // Allow credentials
+    })
+  )
+
   // Initialize session storage.
   app.use(
     session({
@@ -55,19 +61,12 @@ const main = async () => {
     })
   );
 
-  app.use(
-    cors({
-      origin: ['https://studio.apollographql.com', 'http://localhost:3000'], // Allow your client URL
-      credentials: true, // Allow credentials
-    })
-  )
-
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
       resolvers: [HelloResolver, PostResolver, UserResolver],
       validate: false,
     }),
-    context: ({req, res}): MyContext => ({ em: em, req, res }),
+    context: ({req, res}) => ({ em: em, req, res }),
   });
 
   await apolloServer.start();
