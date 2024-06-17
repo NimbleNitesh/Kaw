@@ -12,8 +12,7 @@ import {
 } from "@chakra-ui/react";
 import Wrapper from "@/components/Wrapper";
 import InputField from "@/components/InputField";
-import { useQuery, useMutation } from "urql";
-import { useRegisterMutation } from "@/generated/graphql";
+import { useLoginMutation } from "@/generated/graphql";
 import { FieldError } from "@/generated/graphql";
 import { useRouter } from "next/navigation";
 
@@ -30,7 +29,7 @@ export const toErrorMap = (errors: FieldError[]) => {
 };
 
 const pages = (props: Props) => {
-  const [, register] = useRegisterMutation();
+  const [, login] = useLoginMutation();
   const router = useRouter();
 
   return (
@@ -38,11 +37,11 @@ const pages = (props: Props) => {
       <Formik
         initialValues={{ username: "", password: "" }}
         onSubmit={async (values, {setErrors}) => {
-          const response = await register({ userCredentials: values });
-          if(response.data?.register.error){
-            // console.log(toErrorMap(response.data.register.error));
-            alert(JSON.stringify(toErrorMap(response.data.register.error)));
-          } else if(response.data?.register.user){
+          const response = await login({ userCredentials: values });
+          if(response.data?.login.error){
+            // console.log(toErrorMap(response.data.login.error));
+            alert(JSON.stringify(toErrorMap(response.data.login.error)));
+          } else if(response.data?.login.user){
             router.push('/');
           }
         }}
@@ -63,7 +62,7 @@ const pages = (props: Props) => {
             />
             </Box>
             <Button type="submit" colorScheme="teal" mt="5%" isLoading={isSubmitting}>
-              Register
+              Log In
             </Button>
           </Form>
         )}

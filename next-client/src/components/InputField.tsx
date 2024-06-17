@@ -17,7 +17,7 @@ const inputField: React.FC<Props> = ({ label, size: _, ...props }) => {
   const [field, { error }] = useField(props);
 
   return (
-    <FormControl isInvalid={!!error}>
+    <FormControl isInvalid={!!error} isRequired>
       <FormLabel htmlFor={field.name}>{label}</FormLabel>
       <Input
         {...field}
