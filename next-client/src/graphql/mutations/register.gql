@@ -5,8 +5,7 @@ mutation Register($userCredentials: UserCredentials!) {
       message
     }
     user {
-      id
-      username
+      ...regularUser
     }
   }
 }

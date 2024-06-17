@@ -1,12 +1,13 @@
 import React from "react";
-import { Box, Flex } from "@chakra-ui/react";
+import { Box, Button, Flex } from "@chakra-ui/react";
 import { Link } from "@chakra-ui/next-js";
-import { useMeQuery } from "@/generated/graphql";
+import { useLogoutMutation, useMeQuery } from "@/generated/graphql";
 
 type Props = {};
 
 const NavBar = (props: Props) => {
   const [{ data, fetching }] = useMeQuery();
+  const [{ fetching: logoutFetching }, logout] = useLogoutMutation();
   let body = null;
 
   if (fetching) {
@@ -24,13 +25,21 @@ const NavBar = (props: Props) => {
     );
   } else {
     body = (
-      <Box textAlign="center"  justifyContent="space-between" gap="5%">
+      <Box textAlign="center" justifyContent="space-between" gap="8%">
         <Flex m="1%" bg="navy" borderRadius="5px" borderColor="white">
           {data.me.username}
         </Flex>
-        <Link href="/" m="1%">
-          Log Out
-        </Link>
+        <Button
+          m="1%"
+          p="3%"
+          bg="tomato"
+          onClick={() => {
+            /**LogoutMutation doesn't require any variables, we can call this function with an empty object. */
+            logout({});
+          }}
+          variant="link"
+          isLoading={logoutFetching}
+        >Log Out</Button>
       </Box>
     );
   }
