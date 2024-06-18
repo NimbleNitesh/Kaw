@@ -13,7 +13,6 @@ import RedisStore from "connect-redis";
 import session from "express-session";
 import { createClient } from "redis";
 import cors from "cors";
-
 declare module "express-session" {
     interface SessionData {
         userId: number;

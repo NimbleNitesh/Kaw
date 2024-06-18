@@ -17,7 +17,6 @@ import { useRegisterMutation } from "@/generated/graphql";
 import { FieldError } from "@/generated/graphql";
 import { useRouter } from "next/navigation";
 
-
 type Props = {};
 
 export const toErrorMap = (errors: FieldError[]) => {
@@ -36,14 +35,14 @@ const pages = (props: Props) => {
   return (
     <Wrapper variant="small">
       <Formik
-        initialValues={{ username: "", password: "" }}
-        onSubmit={async (values, {setErrors}) => {
+        initialValues={{ username: "", password: "", email: ""}}
+        onSubmit={async (values, { setErrors }) => {
           const response = await register({ userCredentials: values });
-          if(response.data?.register.error){
+          if (response.data?.register.error) {
             // console.log(toErrorMap(response.data.register.error));
             alert(JSON.stringify(toErrorMap(response.data.register.error)));
-          } else if(response.data?.register.user){
-            router.push('/');
+          } else if (response.data?.register.user) {
+            router.push("/");
           }
         }}
       >
@@ -55,14 +54,26 @@ const pages = (props: Props) => {
               label="Username"
             />
             <Box mt="5%">
-            <InputField
-              name="password"
-              placeholder="password"
-              label="Password"
-              type="password"
-            />
+              <InputField
+                name="email"
+                placeholder="email"
+                label="Email"
+              />
             </Box>
-            <Button type="submit" colorScheme="teal" mt="5%" isLoading={isSubmitting}>
+            <Box mt="5%">
+              <InputField
+                name="password"
+                placeholder="password"
+                label="Password"
+                type="password"
+              />
+            </Box>
+            <Button
+              type="submit"
+              colorScheme="teal"
+              mt="5%"
+              isLoading={isSubmitting}
+            >
               Register
             </Button>
           </Form>

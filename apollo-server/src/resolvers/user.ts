@@ -17,6 +17,7 @@ import { COOKIE_NAME } from "../constant";
 class UserCredentials {
   @Field(() => String) username: string;
   @Field(() => String) password: string;
+  @Field(() => String) email?: string;
 }
 
 @ObjectType()
@@ -51,17 +52,18 @@ export class UserResolver {
     const user = em.create(User, {
       username: userCredentials.username,
       password: hashedPassword,
+      email: userCredentials.email,
     } as User);
     try {
       await em.persist(user).flush();
       req.session.userId = user.id;
       return { user };
     } catch (err) {
-      if (err.code === "23505") {
+      if (err.code == "23505") {
         return {
           error: [
             {
-              field: "username",
+              field: "usernameOrEmail",
               message: "username already exists",
             },
           ],
@@ -80,22 +82,25 @@ export class UserResolver {
 
   @Mutation(() => UserResponse)
   async login(
-    @Arg("userCredentials") userCredentials: UserCredentials,
+    @Arg("usernameOrEmail") usernameOrEmail: string,
+    @Arg("password") password: string,
     @Ctx() { em, req }: MyContext
   ): Promise<UserResponse> {
-    const user = await em.findOne(User, { username: userCredentials.username });
+    const user = await em.findOne(User, {
+      $or: [{ username: usernameOrEmail }, { email: usernameOrEmail }],
+    });
     if (!user) {
       return {
         error: [
           {
             field: "username",
-            message: "username doesn't exist",
+            message: "Username/Email doesn't exist",
           },
         ],
       };
     }
 
-    const valid = await argon2.verify(user.password, userCredentials.password);
+    const valid = await argon2.verify(user.password, password);
     if (!valid) {
       return {
         error: [
@@ -131,4 +136,5 @@ export class UserResolver {
       })
     );
   }
+
 }

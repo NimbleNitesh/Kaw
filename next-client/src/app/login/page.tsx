@@ -35,9 +35,9 @@ const pages = (props: Props) => {
   return (
     <Wrapper variant="small">
       <Formik
-        initialValues={{ username: "", password: "" }}
+        initialValues={{ usernameOrEmail: "", password: "" }}
         onSubmit={async (values, {setErrors}) => {
-          const response = await login({ userCredentials: values });
+          const response = await login({ password: values.password, usernameOrEmail: values.usernameOrEmail });
           if(response.data?.login.error){
             // console.log(toErrorMap(response.data.login.error));
             alert(JSON.stringify(toErrorMap(response.data.login.error)));
@@ -49,9 +49,9 @@ const pages = (props: Props) => {
         {({ isSubmitting }) => (
           <Form>
             <InputField
-              name="username"
-              placeholder="username"
-              label="Username"
+              name="usernameOrEmail"
+              placeholder="Username or Email"
+              label="Username or Email"
             />
             <Box mt="5%">
             <InputField

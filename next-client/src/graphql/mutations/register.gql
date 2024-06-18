@@ -1,11 +1,11 @@
-mutation Register($userCredentials: UserCredentials!) {
+mutation Register($userCredentials: UserCredentials!){
   register(userCredentials: $userCredentials) {
-    error {
-      field
-      message
-    }
     user {
       ...regularUser
+    }
+    error {
+      message
+      field
     }
   }
 }
