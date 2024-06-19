@@ -27,7 +27,7 @@ const main = async () => {
 
   // Initialize client.
   let redisClient = createClient();
-  redisClient.connect().catch(console.error);
+  await redisClient.connect().catch(console.error);
 
   // Initialize store.
   let redisStore = new RedisStore({
@@ -65,7 +65,7 @@ const main = async () => {
       resolvers: [HelloResolver, PostResolver, UserResolver],
       validate: false,
     }),
-    context: ({req, res}) => ({ em: em, req, res }),
+    context: ({req, res}) => ({ em: em, req, res, redisClient }),
   });
 
   await apolloServer.start();

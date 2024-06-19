@@ -11,7 +11,10 @@ import {
   Resolver,
 } from "type-graphql";
 import argon2 from "argon2";
-import { COOKIE_NAME } from "../constant";
+import { COOKIE_NAME, FORGET_PASSWORD_PREFIX } from "../constant";
+import { sendMail } from "../utils/sendMail";
+import { v4 } from "uuid";
+import { wrap } from "@mikro-orm/core";
 
 @InputType()
 class UserCredentials {
@@ -137,4 +140,78 @@ export class UserResolver {
     );
   }
 
+  @Mutation(() => Boolean)
+  async forgotPassword(
+    @Arg("email") email: string,
+    @Ctx() { em, redisClient }: MyContext
+  ) {
+    const user = await em.findOne(User, { email: email });
+    if (!user) {
+      /**
+       * We intentionally donot tell the user that this email address doesn't exist as this might be a fishing attempt.
+       */
+      return true;
+    }
+
+    const token = v4();
+    await redisClient.set(FORGET_PASSWORD_PREFIX + token, user.id, {
+      EX: 300,
+    });
+
+    await sendMail(
+      email,
+      `<p>
+      Click the following link to verify your email: 
+      <a href="http://localhost:3000/change-password/${token}"> Link </a>.
+      Link will be valid for 5 minutes.
+      </p>`
+    );
+
+    return true;
+  }
+
+  @Mutation( ()=> UserResponse)
+  async changePassword(
+    @Arg("token") token: string,
+    @Arg("newPassword") newPassword: string,
+    @Ctx() {redisClient, em, req}: MyContext
+  ): Promise<UserResponse> {
+    const key = FORGET_PASSWORD_PREFIX + token;
+    const userId = await redisClient.get(key);
+    if(!userId){
+      return {
+        error: [
+          {
+            field: "token",
+            message: "token expired"
+          }
+        ]
+      }
+    }
+
+    const user = await em.findOne(User, {id: parseInt(userId)});
+    if(!user){
+      return {
+        error: [
+          {
+            field: "token",
+            message: "user no longer exist"
+          }
+        ]
+      }
+    }
+
+    const hashedPassword = await argon2.hash(newPassword);
+    user.password = hashedPassword;
+
+    wrap(user).assign({
+      password: hashedPassword
+    });
+
+    await redisClient.DEL(key);
+
+    req.session.userId = parseInt(userId);
+
+    return { user } ;
+  }
 }
