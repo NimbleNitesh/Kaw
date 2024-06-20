@@ -13,7 +13,7 @@ export default function Page() {
     <>
       <NavBar />
       <div>Hello World</div>
-      <Flex alignItems="center" justifyContent="center" maxW="100%">
+      <Flex alignItems="center" justifyContent="center" maxW="100%" color="teal">
         <Box width="30%">
           {!data
             ? null
