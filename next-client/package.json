@@ -16,12 +16,14 @@
     "@emotion/styled": "^11.11.5",
     "@urql/exchange-graphcache": "^7.1.1",
     "@urql/next": "^1.1.1",
+    "emoji-picker-react": "^4.10.0",
     "formik": "^2.4.6",
     "framer-motion": "^11.2.10",
     "graphql": "^16.8.2",
     "next": "14.2.4",
     "react": "^18",
     "react-dom": "^18",
+    "react-icons": "^5.2.1",
     "urql": "^4.1.0"
   },
   "devDependencies": {
