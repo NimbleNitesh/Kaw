@@ -11,6 +11,7 @@ export default function Page() {
 
   return (
     <>
+      <Box backgroundColor="antiquewhite" h="100vh">
       <NavBar />
       <div>Hello World</div>
       <Flex alignItems="center" justifyContent="center" maxW="100%" color="teal">
@@ -27,6 +28,7 @@ export default function Page() {
               ))}
         </Box>
       </Flex>
+      </Box>
     </>
   );
 }

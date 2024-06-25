@@ -18,7 +18,7 @@ const Post = (props: Props) => {
 
 
   return (
-    <Box borderColor="black" color="teal" border="10px">
+    <Box color="tomato" borderWidth="2px" borderColor="black" borderStyle="solid" w="120px" h="30px">
         {props.title}
         <Box textAlign="right">
             {convertToDate(props.updatedAt)}
