@@ -14,8 +14,8 @@ export default function Page() {
 
   return (
     <>
-      <Box backgroundColor="antiquewhite" h="100vh">
-        <NavBar />
+      <NavBar />
+      <Flex justifyContent="space-around" overflow="hidden">
         {fetching ? (
           <Box>
             <h1>Loading ...</h1>
@@ -27,8 +27,6 @@ export default function Page() {
           </Box>
         ) : (
           <Flex
-            alignItems="center"
-            justifyContent="center"
             maxW="100%"
             color="teal"
             direction="column"
@@ -49,7 +47,7 @@ export default function Page() {
             </Box>
           </Flex>
         )}
-      </Box>
+      </Flex>
     </>
   );
 }

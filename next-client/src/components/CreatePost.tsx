@@ -3,20 +3,25 @@ import { Box, Button, Flex, Textarea } from "@chakra-ui/react";
 import EmojiPicker from "emoji-picker-react";
 import { GrEmoji } from "react-icons/gr";
 import { IconContext } from "react-icons";
+import { useCreatePostMutation } from "@/generated/graphql";
+import { useRouter } from "next/navigation";
 
 type Props = {};
 
 const CreatePost = (props: Props) => {
+  const router = useRouter();
   const [postContent, setPostContent] = useState("");
   const [showEmoji, setShowEmoji] = useState(false);
+  const [, createPost] = useCreatePostMutation();
+
   return (
     <Box
       w="600px"
-      h="180px"
+      h="140px"
       mt="3%"
       mb="3%"
       borderWidth="2px"
-      borderColor="black"
+      borderColor="teal"
       borderStyle="solid"
     >
       <Textarea
@@ -37,9 +42,14 @@ const CreatePost = (props: Props) => {
         />
         <Button
           style={{ marginRight: "20px", marginTop: "10px", background: "teal" }}
-          onClick={() => {
+          onClick={async () => {
             setShowEmoji(false);
-            console.log(postContent);
+            // console.log(postContent);
+            if(postContent === '')
+              return;
+            await createPost({ title: postContent });
+            console.log("Post Created");
+            router.replace('/');
           }}
         >
           Post

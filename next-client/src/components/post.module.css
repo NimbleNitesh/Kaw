@@ -1,0 +1,18 @@
+.reactionWrapper:hover {
+    background-color: rgba(0, 0, 0, 0.1); 
+}
+
+.reactionWrapper:hover .reactionIcons {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reactionIcons {
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 0.5s, transform 0.5s;
+}
+
+.reactionIcon:hover {
+    size: 40;
+}

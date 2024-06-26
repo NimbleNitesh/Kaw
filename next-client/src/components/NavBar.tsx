@@ -8,6 +8,7 @@ type Props = {};
 const NavBar = (props: Props) => {
   const [{ data, fetching }] = useMeQuery();
   const [{ fetching: logoutFetching }, logout] = useLogoutMutation();
+  const tabs = ["Home", "Profile", "Search"];
   let body = null;
 
   if (fetching) {
@@ -25,6 +26,12 @@ const NavBar = (props: Props) => {
     );
   } else {
     body = (
+      <Box className="tabs">
+        {tabs.map((tab) => (
+          <Link href={`/${tab}`} key={tab} m="1%" style={{display: "flex", flexDirection: "column", fontFamily: "monospace", fontSize: "25px", gap: "15px"}}>
+            {tab}
+          </Link>
+        ))}
       <Box textAlign="center" justifyContent="space-between" gap="8%">
         <Flex m="1%" bg="navy" borderRadius="5px" borderColor="white">
           {data.me.username}
@@ -39,13 +46,14 @@ const NavBar = (props: Props) => {
           }}
           variant="link"
           isLoading={logoutFetching}
-        >Log Out</Button>
+          >Log Out</Button>
       </Box>
+          </Box>
     );
   }
 
   return (
-    <Flex bg="darkcyan" color="white" p="2%" justifyContent="flex-end" h="10%">
+    <Flex bg="teal" color="white" p="2%" h="100vh" pos="fixed" w="15vw" >
       {body}
     </Flex>
   );
