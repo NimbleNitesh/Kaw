@@ -2,6 +2,7 @@ import React from "react";
 import { Box, Button, Flex } from "@chakra-ui/react";
 import { Link } from "@chakra-ui/next-js";
 import { useLogoutMutation, useMeQuery } from "@/generated/graphql";
+import styles from "./navbar.module.css";
 
 type Props = {};
 
@@ -26,34 +27,61 @@ const NavBar = (props: Props) => {
     );
   } else {
     body = (
-      <Box className="tabs">
-        {tabs.map((tab) => (
-          <Link href={`/${tab}`} key={tab} m="1%" style={{display: "flex", flexDirection: "column", fontFamily: "monospace", fontSize: "25px", gap: "15px"}}>
-            {tab}
-          </Link>
-        ))}
-      <Box textAlign="center" justifyContent="space-between" gap="8%">
-        <Flex m="1%" bg="navy" borderRadius="5px" borderColor="white">
-          {data.me.username}
+      <Box>
+        <Flex flexDirection="column" gap="20px" h="75vh">
+          {tabs.map((tab) => (
+            <Link
+              href={`/${tab}`}
+              key={tab}
+              m="1%"
+              style={{ fontFamily: "monospace", fontSize: "25px" }}
+            >
+              {tab}
+            </Link>
+          ))}
         </Flex>
-        <Button
-          m="1%"
-          p="3%"
-          bg="tomato"
-          onClick={() => {
-            /**LogoutMutation doesn't require any variables, we can call this function with an empty object. */
-            logout({});
-          }}
-          variant="link"
-          isLoading={logoutFetching}
-          >Log Out</Button>
-      </Box>
+        <Box textAlign="center" justifyContent="space-between" gap="8%">
+          <Box
+            className={styles.profileButton}
+            m="1%"
+            bg="tomato"
+            borderRadius="75px"
+            h="60px"
+            >
+            <Box>{data.me.username}</Box>
+            <Box>{data.me.id}</Box>
+
+            <Button
+              className={styles.logoutButton}
+              m="1%"
+              p="3%"
+              bg="green"
+              onClick={() => {
+                /**LogoutMutation doesn't require any variables, we can call this function with an empty object. */
+                logout({});
+              }}
+              variant="link"
+              isLoading={logoutFetching}
+            >
+              Log Out
+            </Button>
           </Box>
+        </Box>
+      </Box>
     );
   }
 
   return (
-    <Flex bg="teal" color="white" p="2%" h="100vh" pos="fixed" w="15vw" >
+    <Flex
+      bg="teal"
+      color="white"
+      p="2%"
+      h="100vh"
+      pos="fixed"
+      w="15vw"
+      flexDirection="column"
+      gap="20px"
+    >
       {body}
     </Flex>
   );

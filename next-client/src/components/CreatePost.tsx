@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState } from "react";
 import { Box, Button, Flex, Textarea } from "@chakra-ui/react";
 import EmojiPicker from "emoji-picker-react";
@@ -48,8 +50,7 @@ const CreatePost = (props: Props) => {
             if(postContent === '')
               return;
             await createPost({ title: postContent });
-            console.log("Post Created");
-            router.replace('/');
+            router.refresh();
           }}
         >
           Post

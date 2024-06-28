@@ -1,0 +1,14 @@
+.profileButton:hover{
+    opacity: 0.8;
+}
+
+.logoutButton {
+    opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 0.5s, transform 0.5s;
+}
+
+.profileButton:hover .logoutButton {
+    transform: translateY(0);
+    opacity: 1;
+  }
