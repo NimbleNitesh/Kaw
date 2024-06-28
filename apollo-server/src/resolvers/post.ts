@@ -1,14 +1,36 @@
 import { Post } from "../entities/Post";
-import { Arg, Ctx, Int, Mutation, Query, Resolver, UseMiddleware } from "type-graphql";
+import {
+  Arg,
+  Ctx,
+  Int,
+  Mutation,
+  Query,
+  Resolver,
+  UseMiddleware,
+} from "type-graphql";
 import { MyContext } from "../types";
 import { User } from "../entities/User";
 import { isAuth } from "../middleware/isAuth";
+import { EntityManager } from "@mikro-orm/postgresql";
 
 @Resolver()
 export class PostResolver {
   @Query(() => [Post])
-  getAllPosts(@Ctx() { em }: MyContext) {
-    return em.find(Post, {});
+  async getAllPosts(
+    @Arg("limit", () => Int) limit: number,
+    @Arg("cursor", () => String, {nullable: true}) cursor: string | null,
+    @Ctx() { em }: MyContext
+  ) {
+    const realLimit = Math.min(50, limit);
+
+    const emm = em as EntityManager;
+    const qb = emm.createQueryBuilder(Post);
+    const res = await qb
+      .select("*")
+      .where({ createdAt: { $lt: cursor ? new Date(parseInt(cursor)) : new Date() }}) // $lt = less than
+      .orderBy({ createdAt: "DESC" })
+      .limit(realLimit);
+    return res;
   }
 
   @Query(() => Post, { nullable: true })

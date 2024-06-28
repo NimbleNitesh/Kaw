@@ -9,7 +9,11 @@ import { useMeQuery } from "@/generated/graphql";
 import CreatePost from "@/components/CreatePost";
 
 export default function Page() {
-  const [{ data }] = useGetAllPostsQuery();
+  const [{ data }] = useGetAllPostsQuery({
+    variables: {
+      limit: 5
+    }
+  });
   const [{ data: meData, fetching }] = useMeQuery();
 
   return (

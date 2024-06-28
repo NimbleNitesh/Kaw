@@ -92,6 +92,12 @@ export type Query = {
 };
 
 
+export type QueryGetAllPostsArgs = {
+  cursor?: InputMaybe<Scalars['String']['input']>;
+  limit: Scalars['Int']['input'];
+};
+
+
 export type QueryGetPostArgs = {
   id: Scalars['Int']['input'];
 };
@@ -161,10 +167,13 @@ export type RegisterMutationVariables = Exact<{
 
 export type RegisterMutation = { __typename?: 'Mutation', register: { __typename?: 'UserResponse', user?: { __typename?: 'User', id: number, username: string } | null, error?: Array<{ __typename?: 'FieldError', message: string, field: string }> | null } };
 
-export type GetAllPostsQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetAllPostsQueryVariables = Exact<{
+  limit: Scalars['Int']['input'];
+  cursor?: InputMaybe<Scalars['String']['input']>;
+}>;
 
 
-export type GetAllPostsQuery = { __typename?: 'Query', getAllPosts: Array<{ __typename?: 'Post', id: number, createdAt: string, updatedAt: string, title: string }> };
+export type GetAllPostsQuery = { __typename?: 'Query', getAllPosts: Array<{ __typename?: 'Post', id: number, title: string, createdAt: string, updatedAt: string, creator: { __typename?: 'User', id: number } }> };
 
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -264,17 +273,20 @@ export function useRegisterMutation() {
   return Urql.useMutation<RegisterMutation, RegisterMutationVariables>(RegisterDocument);
 };
 export const GetAllPostsDocument = gql`
-    query GetAllPosts {
-  getAllPosts {
+    query GetAllPosts($limit: Int!, $cursor: String) {
+  getAllPosts(limit: $limit, cursor: $cursor) {
     id
+    title
     createdAt
     updatedAt
-    title
+    creator {
+      id
+    }
   }
 }
     `;
 
-export function useGetAllPostsQuery(options?: Omit<Urql.UseQueryArgs<GetAllPostsQueryVariables>, 'query'>) {
+export function useGetAllPostsQuery(options: Omit<Urql.UseQueryArgs<GetAllPostsQueryVariables>, 'query'>) {
   return Urql.useQuery<GetAllPostsQuery, GetAllPostsQueryVariables>({ query: GetAllPostsDocument, ...options });
 };
 export const MeDocument = gql`
