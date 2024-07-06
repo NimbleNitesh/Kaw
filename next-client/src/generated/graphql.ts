@@ -78,9 +78,14 @@ export type Post = {
   createdAt: Scalars['String']['output'];
   creator: User;
   id: Scalars['Int']['output'];
-  points: Scalars['Int']['output'];
+  reactions: Scalars['String']['output'];
   title: Scalars['String']['output'];
   updatedAt: Scalars['String']['output'];
+};
+
+export type PostCursor = {
+  createdAt: Scalars['String']['input'];
+  id: Scalars['Int']['input'];
 };
 
 export type Query = {
@@ -93,7 +98,7 @@ export type Query = {
 
 
 export type QueryGetAllPostsArgs = {
-  cursor?: InputMaybe<Scalars['String']['input']>;
+  cursor?: InputMaybe<PostCursor>;
   limit: Scalars['Int']['input'];
 };
 
@@ -138,7 +143,7 @@ export type CreatePostMutationVariables = Exact<{
 }>;
 
 
-export type CreatePostMutation = { __typename?: 'Mutation', createPost: { __typename?: 'Post', title: string, points: number, creator: { __typename?: 'User', id: number, username: string } } };
+export type CreatePostMutation = { __typename?: 'Mutation', createPost: { __typename?: 'Post', title: string, creator: { __typename?: 'User', id: number, username: string } } };
 
 export type ForgotPasswordMutationVariables = Exact<{
   email: Scalars['String']['input'];
@@ -169,7 +174,7 @@ export type RegisterMutation = { __typename?: 'Mutation', register: { __typename
 
 export type GetAllPostsQueryVariables = Exact<{
   limit: Scalars['Int']['input'];
-  cursor?: InputMaybe<Scalars['String']['input']>;
+  cursor?: InputMaybe<PostCursor>;
 }>;
 
 
@@ -212,7 +217,6 @@ export const CreatePostDocument = gql`
       username
     }
     title
-    points
   }
 }
     `;
@@ -273,7 +277,7 @@ export function useRegisterMutation() {
   return Urql.useMutation<RegisterMutation, RegisterMutationVariables>(RegisterDocument);
 };
 export const GetAllPostsDocument = gql`
-    query GetAllPosts($limit: Int!, $cursor: String) {
+    query GetAllPosts($limit: Int!, $cursor: PostCursor) {
   getAllPosts(limit: $limit, cursor: $cursor) {
     id
     title

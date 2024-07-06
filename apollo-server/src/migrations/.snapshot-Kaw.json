@@ -141,15 +141,15 @@
           "nullable": false,
           "mappedType": "text"
         },
-        "points": {
-          "name": "points",
-          "type": "int",
+        "reactions": {
+          "name": "reactions",
+          "type": "jsonb",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": false,
-          "default": "0",
-          "mappedType": "integer"
+          "default": "'{\"funny\":0,\"love\":0,\"sad\":0,\"support\":0,\"idea\":0}'",
+          "mappedType": "json"
         },
         "creator_id": {
           "name": "creator_id",

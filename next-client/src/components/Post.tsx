@@ -34,11 +34,11 @@ const Post = (props: Props) => {
   } | null>(null);
 
   const reactionIcons = [
-    { icon: FaLaughSquint, color: "blue" },
-    { icon: FaHeart, color: "tomato" },
-    { icon: FaSadTear, color: "gray" },
-    { icon: FaHandHoldingHeart, color: "green" },
-    { icon: FaLightbulb, color: "yellow" },
+    { icon: FaLaughSquint, color: "blue" }, // funny
+    { icon: FaHeart, color: "tomato" }, // love
+    { icon: FaSadTear, color: "gray" }, // sad
+    { icon: FaHandHoldingHeart, color: "green" }, // support
+    { icon: FaLightbulb, color: "yellow" }, // idea
   ];
 
   return (

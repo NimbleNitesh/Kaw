@@ -5,6 +5,5 @@ mutation CreatePost($title: String!) {
       username
     }
     title
-    points
   }
 }

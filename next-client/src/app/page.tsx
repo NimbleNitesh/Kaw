@@ -2,17 +2,20 @@
 "use client";
 import NavBar from "@/components/NavBar";
 import { Link } from "@chakra-ui/next-js";
-import { useGetAllPostsQuery } from "@/generated/graphql";
+import { PostCursor, useGetAllPostsQuery } from "@/generated/graphql";
 import Post from "@/components/Post";
-import { Box, Flex, Grid } from "@chakra-ui/react";
+import { Box, Button, Flex, Grid } from "@chakra-ui/react";
 import { useMeQuery } from "@/generated/graphql";
 import CreatePost from "@/components/CreatePost";
+import { useState } from "react";
 
 export default function Page() {
+  const [variables, setVariables] = useState({
+    limit: 10,
+    cursor: null as PostCursor | null,
+  });
   const [{ data }] = useGetAllPostsQuery({
-    variables: {
-      limit: 5
-    }
+    variables,
   });
   const [{ data: meData, fetching }] = useMeQuery();
 
@@ -30,11 +33,7 @@ export default function Page() {
             <h2>Login to find out....</h2>
           </Box>
         ) : (
-          <Flex
-            maxW="100%"
-            color="teal"
-            direction="column"
-          >
+          <Flex maxW="100%" color="teal" direction="column">
             <CreatePost />
             <Box width="600px">
               {!data
@@ -48,6 +47,23 @@ export default function Page() {
                       updatedAt={p.updatedAt}
                     ></Post>
                   ))}
+              {data ? (
+                <Button
+                  onClick={() => {
+                    setVariables({
+                      limit: variables.limit,
+                      cursor: {
+                        createdAt:
+                          data.getAllPosts[data.getAllPosts.length - 1]
+                            .createdAt,
+                        id: data.getAllPosts[data.getAllPosts.length - 1].id,
+                      },
+                    });
+                  }}
+                >
+                  Load More
+                </Button>
+              ) : null}
             </Box>
           </Flex>
         )}

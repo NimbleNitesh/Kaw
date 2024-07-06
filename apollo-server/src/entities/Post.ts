@@ -2,6 +2,14 @@ import { Entity, ManyToOne, PrimaryKey, Property } from "@mikro-orm/core";
 import { Field, Int, ObjectType } from "type-graphql";
 import { User } from "./User";
 
+type Reactions = {
+    funny: number;
+    love: number;
+    sad: number;
+    support: number;
+    idea: number;
+};
+
 @ObjectType()
 @Entity()
 export class Post {
@@ -21,9 +29,10 @@ export class Post {
     @Property({type: 'text'})
     title!: string;
 
-    @Field(() => Int)
-    @Property({default: 0})
-    points: number
+    // Object of reaction types: {"funny": 0, "love": 0, "sad": 0, "support": 0, "idea": 0}
+    @Field(() => String)
+    @Property({ type: 'jsonb',  default: JSON.stringify({funny: 0, love: 0, sad: 0, support: 0, idea: 0})})
+    reactions: Reactions;
 
     @Field()
     @ManyToOne(() => User)
