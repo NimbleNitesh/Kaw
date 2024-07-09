@@ -1,11 +1,14 @@
 query GetAllPosts($limit: Int!, $cursor: PostCursor) {
   getAllPosts(limit: $limit, cursor: $cursor) {
-    id,
-    title,
-    createdAt,
-    updatedAt,
-    creator {
-      id
-    }
+    posts {
+      id,
+      title,
+      createdAt,
+      updatedAt,
+      creator {
+        id
+      }
+    },
+    hasMore
   }
 }

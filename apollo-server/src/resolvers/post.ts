@@ -9,6 +9,7 @@ import {
   Resolver,
   UseMiddleware,
   Field,
+  ObjectType,
 } from "type-graphql";
 import { MyContext } from "../types";
 import { User } from "../entities/User";
@@ -16,7 +17,7 @@ import { isAuth } from "../middleware/isAuth";
 import { EntityManager } from "@mikro-orm/postgresql";
 
 @InputType()
-export class PostCursor {
+class PostCursor {
   @Field(() => Int)
   id: number;
 
@@ -24,26 +25,28 @@ export class PostCursor {
   createdAt: string;
 }
 
+@ObjectType()
+class PaginatedPost {
+  @Field(() => [Post])
+  posts: Post[];
+
+  @Field()
+  hasMore: boolean;
+}
+
 @Resolver()
 export class PostResolver {
-  @Query(() => [Post])
+  @Query(() => PaginatedPost)
   async getAllPosts(
     @Arg("limit", () => Int) limit: number,
     @Arg("cursor", () => PostCursor, { nullable: true })
     cursor: PostCursor | null,
     @Ctx() { em }: MyContext
   ) {
-    const realLimit = Math.min(50, limit);
+    const realLimit = Math.min(50, limit) + 1;
 
     const emm = em as EntityManager;
     const qb = emm.createQueryBuilder(Post);
-
-    // if (cursor) {
-    //   qb.where(
-    //     "createdAt < :createdAt OR (createdAt = :createdAt AND id < :id)",
-    //     { createdAt: cursor.createdAt, id: cursor.id } as any
-    //   );
-    // }
 
     if (cursor === null) {
       const res = await qb
@@ -51,7 +54,9 @@ export class PostResolver {
         .where({ createdAt: { $lt: new Date() } }) // $lt = less than
         .orderBy({ createdAt: "DESC", id: "ASC" })
         .limit(realLimit);
-      return res;
+
+      const hasMore = res.length === realLimit;
+      return { posts: res.slice(0, realLimit - 1), hasMore }; // User asked for 10, we fetched 11(to know about hasMore) but we will show 10 only
     } else {
       const res = await qb
         .select("*")
@@ -68,7 +73,8 @@ export class PostResolver {
         })
         .orderBy({ createdAt: "DESC", id: "ASC" })
         .limit(realLimit);
-      return res;
+      const hasMore = res.length === realLimit;
+      return { posts: res.slice(0, realLimit - 1), hasMore };
     }
   }
 

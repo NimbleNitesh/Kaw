@@ -73,6 +73,12 @@ export type MutationUpdatePostArgs = {
   title?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type PaginatedPost = {
+  __typename?: 'PaginatedPost';
+  hasMore: Scalars['Boolean']['output'];
+  posts: Array<Post>;
+};
+
 export type Post = {
   __typename?: 'Post';
   createdAt: Scalars['String']['output'];
@@ -90,7 +96,7 @@ export type PostCursor = {
 
 export type Query = {
   __typename?: 'Query';
-  getAllPosts: Array<Post>;
+  getAllPosts: PaginatedPost;
   getPost?: Maybe<Post>;
   hello: Scalars['String']['output'];
   me?: Maybe<User>;
@@ -178,7 +184,7 @@ export type GetAllPostsQueryVariables = Exact<{
 }>;
 
 
-export type GetAllPostsQuery = { __typename?: 'Query', getAllPosts: Array<{ __typename?: 'Post', id: number, title: string, createdAt: string, updatedAt: string, creator: { __typename?: 'User', id: number } }> };
+export type GetAllPostsQuery = { __typename?: 'Query', getAllPosts: { __typename?: 'PaginatedPost', hasMore: boolean, posts: Array<{ __typename?: 'Post', id: number, title: string, createdAt: string, updatedAt: string, creator: { __typename?: 'User', id: number } }> } };
 
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -279,13 +285,16 @@ export function useRegisterMutation() {
 export const GetAllPostsDocument = gql`
     query GetAllPosts($limit: Int!, $cursor: PostCursor) {
   getAllPosts(limit: $limit, cursor: $cursor) {
-    id
-    title
-    createdAt
-    updatedAt
-    creator {
+    posts {
       id
+      title
+      createdAt
+      updatedAt
+      creator {
+        id
+      }
     }
+    hasMore
   }
 }
     `;

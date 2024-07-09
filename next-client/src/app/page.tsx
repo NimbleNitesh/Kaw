@@ -11,14 +11,13 @@ import { useState } from "react";
 
 export default function Page() {
   const [variables, setVariables] = useState({
-    limit: 10,
+    limit: 33,
     cursor: null as PostCursor | null,
   });
   const [{ data }] = useGetAllPostsQuery({
     variables,
   });
   const [{ data: meData, fetching }] = useMeQuery();
-
   return (
     <>
       <NavBar />
@@ -38,7 +37,7 @@ export default function Page() {
             <Box width="600px">
               {!data
                 ? null
-                : data.getAllPosts.map((p) => (
+                : data.getAllPosts.posts.map((p) => (
                     <Post
                       key={p.id}
                       id={p.id}
@@ -47,16 +46,16 @@ export default function Page() {
                       updatedAt={p.updatedAt}
                     ></Post>
                   ))}
-              {data ? (
+              {(data && data.getAllPosts.hasMore) ? (
                 <Button
                   onClick={() => {
                     setVariables({
                       limit: variables.limit,
                       cursor: {
                         createdAt:
-                          data.getAllPosts[data.getAllPosts.length - 1]
+                          data.getAllPosts.posts[data.getAllPosts.posts.length - 1]
                             .createdAt,
-                        id: data.getAllPosts[data.getAllPosts.length - 1].id,
+                        id: data.getAllPosts.posts[data.getAllPosts.posts.length - 1].id,
                       },
                     });
                   }}
