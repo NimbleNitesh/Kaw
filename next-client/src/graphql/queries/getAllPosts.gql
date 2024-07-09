@@ -6,7 +6,8 @@ query GetAllPosts($limit: Int!, $cursor: PostCursor) {
       createdAt,
       updatedAt,
       creator {
-        id
+        id,
+        username
       }
     },
     hasMore

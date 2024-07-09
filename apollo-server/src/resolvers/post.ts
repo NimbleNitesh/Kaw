@@ -46,13 +46,14 @@ export class PostResolver {
     const realLimit = Math.min(50, limit) + 1;
 
     const emm = em as EntityManager;
-    const qb = emm.createQueryBuilder(Post);
+    const qb = emm.createQueryBuilder(Post, 'p');
 
     if (cursor === null) {
       const res = await qb
         .select("*")
-        .where({ createdAt: { $lt: new Date() } }) // $lt = less than
-        .orderBy({ createdAt: "DESC", id: "ASC" })
+        .leftJoinAndSelect("p.creator", 'u')  // MikroORM automatically joins on the correct condition
+        .where({ "p.createdAt": { $lt: new Date() } }) // $lt = less than
+        .orderBy({ "p.createdAt": "DESC", "p.id": "ASC" })
         .limit(realLimit);
 
       const hasMore = res.length === realLimit;
@@ -60,18 +61,19 @@ export class PostResolver {
     } else {
       const res = await qb
         .select("*")
+        .leftJoinAndSelect("p.creator", 'u')
         .where({
           $or: [
-            { createdAt: { $lt: new Date(parseInt(cursor.createdAt)) } },
+            { "p.createdAt": { $lt: new Date(parseInt(cursor.createdAt)) } },
             {
               $and: [
-                { createdAt: { $eq: new Date(parseInt(cursor.createdAt)) } },
-                { id: { $gt: cursor.id } },
+                { "p.createdAt": { $eq: new Date(parseInt(cursor.createdAt)) } },
+                { "p.id": { $gt: cursor.id } },
               ],
             },
           ],
         })
-        .orderBy({ createdAt: "DESC", id: "ASC" })
+        .orderBy({ "p.createdAt": "DESC", "p.id": "ASC" })
         .limit(realLimit);
       const hasMore = res.length === realLimit;
       return { posts: res.slice(0, realLimit - 1), hasMore };

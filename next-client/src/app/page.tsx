@@ -44,6 +44,7 @@ export default function Page() {
                       title={p.title}
                       createdAt={p.createdAt}
                       updatedAt={p.updatedAt}
+                      username={p.creator.username}
                     ></Post>
                   ))}
               {(data && data.getAllPosts.hasMore) ? (

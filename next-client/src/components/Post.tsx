@@ -12,13 +12,13 @@ import { LiaCrowSolid } from "react-icons/lia";
 import { GiImpLaugh } from "react-icons/gi";
 import { IconType } from "react-icons";
 import styles from "./post.module.css";
-import wrapper from "./Wrapper";
 
 type Props = {
   id: number;
   createdAt: string;
   updatedAt: string;
   title: string;
+  username: string;
 };
 
 function convertToDate(unix_timestamp: string) {
@@ -48,19 +48,16 @@ const Post = (props: Props) => {
       borderColor="teal"
       borderStyle="solid"
       w="600px"
-      p="25px"
+      pl="25px"
+      pr="25px"
+      pb="25px"
+      pt="10px"
     >
+      <Box fontSize={12} color="white" pl={10}>{props.username}</Box>
       {props.title}
-      <Box textAlign="right">{convertToDate(props.updatedAt)}</Box>
+      <Box textAlign="right" color="white" fontSize={12}>{convertToDate(props.createdAt)}</Box>
       <Flex style={{ justifyContent: "space-evenly" }}>
         {selectedReaction ? (
-          // <IconButton
-          //   aria-label="selected-reaction"
-          //   icon={React.createElement(selectedReaction.icon)}
-          //   color={selectedReaction.color}
-          //   bg="transparent"
-          //   onClick={() => setSelectedReaction(null)}
-          // />
           <selectedReaction.icon
             size={30}
             style={{

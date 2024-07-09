@@ -184,7 +184,7 @@ export type GetAllPostsQueryVariables = Exact<{
 }>;
 
 
-export type GetAllPostsQuery = { __typename?: 'Query', getAllPosts: { __typename?: 'PaginatedPost', hasMore: boolean, posts: Array<{ __typename?: 'Post', id: number, title: string, createdAt: string, updatedAt: string, creator: { __typename?: 'User', id: number } }> } };
+export type GetAllPostsQuery = { __typename?: 'Query', getAllPosts: { __typename?: 'PaginatedPost', hasMore: boolean, posts: Array<{ __typename?: 'Post', id: number, title: string, createdAt: string, updatedAt: string, creator: { __typename?: 'User', id: number, username: string } }> } };
 
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -292,6 +292,7 @@ export const GetAllPostsDocument = gql`
       updatedAt
       creator {
         id
+        username
       }
     }
     hasMore
