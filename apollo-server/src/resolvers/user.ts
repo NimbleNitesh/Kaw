@@ -202,7 +202,7 @@ export class UserResolver {
     }
 
     const hashedPassword = await argon2.hash(newPassword);
-    user.password = hashedPassword;
+    // user.password = hashedPassword;
 
     wrap(user).assign({
       password: hashedPassword
